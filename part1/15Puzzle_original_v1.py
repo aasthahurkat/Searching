@@ -31,7 +31,7 @@ def printable_board(row):
 
 # return a list of possible successor states
 def successors(state):
-    print("exploring state:",state)
+    #print("exploring state:",state)
     (empty_row, empty_col) = ind2rowcol(state.index(0))
     return [ (swap_tiles(state, empty_row, empty_col, empty_row+i, empty_col+j), c, calculate_heuristic(state)) \
              for (c, (i, j)) in MOVES.items() if valid_index(empty_row+i, empty_col+j) ]
@@ -48,31 +48,34 @@ def solve2(initial_board):
     while len(fringe) > 0:
         (state, route_so_far, cost) = heappop(fringe)
         visited.add(state)
+        #print("popped state:\n" +"\n".join(printable_board(tuple(state))))
         for (succ, move, cost) in successors( state ):
             if is_goal(succ):
                 return( route_so_far + move )
             if succ not in visited:
-                heappush(fringe,(succ, route_so_far + move, cost)) 
+                #if succ in fringe:
+                #print("succ state:\n" +"\n".join(printable_board(tuple(succ))))
+                #print("visited is:" , visited)
+                #print("cost of succ", len(route_so_far) + cost)
+                heappush(fringe,(succ, route_so_far + move, len(route_so_far) + cost)) 
     return False
 
 def calculate_heuristic(state):
     cost = 0
     for i in range(len(state)):
-        for j in range(len(state)):
-            num = state[i]
-            if num != i*len(state) + (j+1) and num != 0:
-                correct_row = (num - 1) // len(state)
-                correct_col = (num - 1) % len(state)
-                cost += abs(i - correct_row) + abs(j - correct_col)
+        num = state[i]
+        if num != i+1 and num != 0:
+            correct_row, correct_col = ind2rowcol(num - 1)
+            curr_row, curr_col = ind2rowcol(i)
+            cost += abs(curr_row - correct_row) + abs(curr_col - correct_col)
     return cost
-
 
 # test cases
 if __name__ == "__main__":
    # if(len(sys.argv) != 3):
     #    raise(Exception("Error: expected 2 arguments"))
     start_state = []
-    with open("D:/Fall 2019/551 - EAI/Assignment/1/bagrawal-aahurkat-rrokde-a1-master/bagrawal-aahurkat-rrokde-a1-master/part1/boardtestn.txt", 'r') as file:
+    with open("D:/Fall 2019/551 - EAI/Assignment/1/bagrawal-aahurkat-rrokde-a1-master/bagrawal-aahurkat-rrokde-a1-master/part1/boardtest2.txt", 'r') as file:
         for line in file:
             start_state += [ int(i) for i in line.split() ]
 
@@ -88,18 +91,3 @@ if __name__ == "__main__":
     route = solve2(tuple(start_state))
     
     print("Solution found in " + str(len(route)) + " moves:" + "\n" + route)
-
-
-
-
-    
-# The solver! - using BFS right now
-def solve(initial_board):
-    fringe = [ (initial_board, "") ]
-    while len(fringe) > 0:
-        (state, route_so_far) = fringe.pop()
-        for (succ, move) in successors( state ):
-            if is_goal(succ):
-                return( route_so_far + move )
-            fringe.insert(0, (succ, route_so_far + move ) )
-    return False
