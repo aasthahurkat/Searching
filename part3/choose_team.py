@@ -25,15 +25,10 @@ def approx_solve(people, budget):
 
     solution=()
     print(people.items())
-    ppl = sorted(people.items(), key=lambda x: x[1][0]/x[1][1])
-    print("Sorted list = ")
-    print(ppl)
-    ppl.reverse()
-    print("Reverse list = ")
-    print(ppl)
-    for (person, (skill, cost, count)) in ppl:
+    people_sorted = sorted(people.items(), key=lambda x: x[1][1]/x[1][0])
+    for (person, (skill, cost, count)) in people_sorted:
         print(person, (skill, cost, count))
-        while(int(budget - cost) > 0):
+        while(budget - cost >= 0):
             count+=1
             budget -= cost
         if int(count) != 0:
