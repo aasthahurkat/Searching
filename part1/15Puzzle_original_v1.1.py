@@ -38,7 +38,7 @@ def successors(state):
         if valid_index(empty_row+i, empty_col+j):
             temp = swap_tiles(state, empty_row, empty_col, empty_row+i, empty_col+j)
             cost = calculate_heuristic(temp)
-            result.append((temp,c,cost))
+            result.append((cost, c, temp))
     return result
     #return [ (temp, c, calculate_heuristic(temp)) \
              #for (c, (i, j)) in MOVES.items() if valid_index(empty_row+i, empty_col+j) ]
@@ -51,12 +51,12 @@ def is_goal(state):
 def solve2(initial_board):
     fringe =[]
     visited =set()
-    heappush(fringe, (initial_board,"",""))
+    heappush(fringe, ("","",initial_board))
     while len(fringe) > 0:
-        (state, route_so_far, cost) = heappop(fringe)
+        (cost, route_so_far, state) = heappop(fringe)
         visited.add(state)
         print("popped state:\n" +"\n".join(printable_board(tuple(state))))
-        for (succ, move, cost) in successors( state ):
+        for (cost, move, succ) in successors( state ):
             if is_goal(succ):
                 return( route_so_far + move )
             if succ not in visited:
@@ -66,22 +66,32 @@ def solve2(initial_board):
                 print("route so far: ", route_so_far)
                 print("actual cost: ", cost)
                 print("len of route so far: ", len(route_so_far))
-                heappush(fringe,(succ, route_so_far + move, len(route_so_far) + cost)) 
+                heappush(fringe,(len(route_so_far) + cost, route_so_far + move, succ)) 
     return False
 
 def calculate_heuristic(state):
     cost = 0
     for i in range(len(state)):
         num = state[i]
+        #if num != 0:
         if num != i+1 and num != 0:
+            #print("i is: ", i)
+            #print("num is: ", num)
             correct_row, correct_col = ind2rowcol(num - 1)
-            #print("correct row,col:" , correct_row, "  ", correct_col)
+           # print("correct row,col:" , correct_row, "  ", correct_col)
             curr_row, curr_col = ind2rowcol(i)
             #print("curr_row,curr-col:" , curr_row,"  " , curr_col)
+            #print("individual cost: ", abs(curr_row - correct_row) + abs(curr_col - correct_col))
             cost += abs(curr_row - correct_row) + abs(curr_col - correct_col)
         elif num == 0:
             curr_row, curr_col = ind2rowcol(i)
             cost += abs(3 - curr_row) + abs(3 - curr_col)
+            #print("i is: ", i)
+            #print("num is: ", num)
+            #print("correct row,col:" , correct_row, "  ", correct_col)
+            #print("curr_row,curr-col:" , curr_row,"  " , curr_col)
+            #print("individual cost: ", abs(curr_row - correct_row) + abs(curr_col - correct_col))
+    #print("value returned: ", cost )
     return cost
 
 # test cases
