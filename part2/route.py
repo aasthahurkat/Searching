@@ -2,8 +2,8 @@
 
 # put your routing program here!
 class Vertex:
-    def __init__(self, vertex,lat,lon):
-        self.name = vertex
+    def __init__(self, name,lat,lon):
+        self.name = name
         self.neighbors = []
         self.lat = lat
         self.lon = lon
@@ -26,36 +26,20 @@ class Graph:
     
     def add_vertex(self, vertex):
         if isinstance(vertex, Vertex):
+            self.vertices[vertex.name] = vertex
             #self.vertices[vertex.name] = vertex.neighbors
-            self.vertices[vertex.name] = vertex.neighbors
 
     def add_edge(self, vertex_from, vertex_to,dist,limit,highway):
-        if isinstance(vertex_from, Vertex) and isinstance(vertex_to, Vertex):
-            print("inside first if")
-            vertex_from.add_neighbor(vertex_to,dist,limit,highway)
-            if isinstance(vertex_from, Vertex) and isinstance(vertex_to, Vertex):
-                print("inside second if")
-                self.vertices[vertex_from.name] = vertex_from.neighbors
-                self.vertices[vertex_to.name] = vertex_to.neighbors
-            else:
-                print("inner else")
+        #if isinstance(Vertex[vertex_from], Vertex) and isinstance(Vertex[vertex_to, Vertex):
+        
+        if vertex_from in self.vertices and vertex_to in self.vertices:
+           # print("inside first if")
+            self.vertices[vertex_from].neighbors.append((self.vertices[vertex_to], dist, limit, highway))
+            self.vertices[vertex_to].neighbors.append((self.vertices[vertex_from], dist, limit, highway))
         else:
-            print("add edge encountered else")
-     
-
-    def add_edge1(self, vertex_from, vertex_to,dist,limit,highway):
-        if isinstance(vertex_from, Vertex) and isinstance(vertex_to, Vertex):
-            print("inside first if")
-            vertex_from.add_neighbor(vertex_to,dist,limit,highway)
-            if isinstance(vertex_from, Vertex) and isinstance(vertex_to, Vertex):
-                print("inside second if")
-                self.vertices[vertex_from.name] = vertex_from.neighbors
-                self.vertices[vertex_to.name] = vertex_to.neighbors
-            else:
-                print("inner else")
-        else:
-            print("add edge encountered else")
-                            
+            print("decide fo rjunction: from: ", vertex_from, "to:  ", vertex_to)
+        
+                      
     def adjacencyList(self):
         if len(self.vertices) >= 1:
                 return [str(key) + ":" + str(self.vertices[key]) for key in self.vertices.keys()]  
@@ -71,7 +55,7 @@ if __name__ == "__main__":
     US_map = Graph()
     cities = []
     i = 0
-    with open("city-gps.txt",'r') as file:
+    with open("D:\\Fall 2019\\551 - EAI\\Assignment\\1\\bagrawal-aahurkat-rrokde-a1-master\\bagrawal-aahurkat-rrokde-a1-master\\part2\\city-gps.txt",'r') as file:
         for line in file:
             city_name = str.split(line)[0]
             latitude = str.split(line)[1]
@@ -80,12 +64,12 @@ if __name__ == "__main__":
             city = Vertex(city_name,latitude,longitude)
             US_map.add_vertex(city)
     
-    with open("road-segments.txt",'r') as file:
+    with open("D:\\Fall 2019\\551 - EAI\\Assignment\\1\\bagrawal-aahurkat-rrokde-a1-master\\bagrawal-aahurkat-rrokde-a1-master\\part2\\road-segments.txt",'r') as file:
         for line in file:
             from_city = str.split(line)[0]
-            print("from_city: ", from_city)
+            #print("from_city: ", from_city)
             to_city = str.split(line)[1]
-            print("to-city: ", to_city)
+            #print("to-city: ", to_city)
             length = str.split(line)[2]
             speed_limit = str.split(line)[3]
             highway_name = str.split(line)[4]
