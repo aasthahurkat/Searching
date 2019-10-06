@@ -43,7 +43,29 @@ def successors(currentNode):
 def solve(source, destination, cost_function):
 
     if(cost_function == "segments"):
-        pass
+        #solution = []
+        fringe = []
+        visited = {(source)}
+        heappush(fringe, (0, adj_list[source][1], [], source, adj_list[source], 0, 0))
+        while len(fringe) > 0:
+            (segments_until_now, cost_until_now, routeList, currentNode, state, time_taken, gas_used) = heappop(fringe)
+            for (succ, distance, SpeedLimit, highwayName) in successors(currentNode):#highwayName is redundant here
+                if succ == destination:
+                    hours = (distance/SpeedLimit)
+                    v = SpeedLimit
+                    gas = 400 * (v/150) * ((1 - (v/150))**4)
+                    return (cost_until_now + distance, routeList, time_taken+hours, gas_used+gas)
+                if (succ not in visited):# and (succ not in fringe):
+                    visited.add(succ)
+                    cost = distance + cost_until_now #+ #Call heuristic
+                    hours = (distance/SpeedLimit)
+                    v = SpeedLimit
+                    gas = 400 * (v/150) * ((1 - (v/150))**4)
+                    routeList.append(succ)#Add current node to our list
+                    if((segments_until_now+1) != len(routeList)):
+                        print("Not Possible!!!!!!!")
+                    heappush(fringe, (len(routeList), cost_until_now + distance, copy.deepcopy(routeList), succ, adj_list[succ], time_taken+hours, gas_used+gas))
+                    routeList.pop()#Prepare the routelist for next node, i.e. ignore the current node
     elif(cost_function == "distance"):
         #solution = []
         fringe = []
@@ -67,9 +89,49 @@ def solve(source, destination, cost_function):
                     heappush(fringe, (cost, copy.deepcopy(routeList), succ, adj_list[succ], time_taken+hours, gas_used+gas))
                     routeList.pop()#Prepare the routelist for next node, i.e. ignore the current node
     elif(cost_function == "time"):
-        pass
+        #solution = []
+        fringe = []
+        visited = {(source)}
+        heappush(fringe, (0, adj_list[source][1], [], source, adj_list[source], 0, 0))
+        while len(fringe) > 0:
+            (time_taken, cost_until_now, routeList, currentNode, state, time_taken, gas_used) = heappop(fringe)
+            for (succ, distance, SpeedLimit, highwayName) in successors(currentNode):#highwayName is redundant here
+                if succ == destination:
+                    hours = (distance/SpeedLimit)
+                    v = SpeedLimit
+                    gas = 400 * (v/150) * ((1 - (v/150))**4)
+                    return (cost_until_now + distance, routeList, time_taken+hours, gas_used+gas)
+                if (succ not in visited):# and (succ not in fringe):
+                    visited.add(succ)
+                    cost = distance + cost_until_now #+ #Call heuristic
+                    hours = (distance/SpeedLimit)
+                    v = SpeedLimit
+                    gas = 400 * (v/150) * ((1 - (v/150))**4)
+                    routeList.append(succ)#Add current node to our list
+                    heappush(fringe, (time_taken+hours, cost_until_now + distance, copy.deepcopy(routeList), succ, adj_list[succ], time_taken+hours, gas_used+gas))
+                    routeList.pop()#Prepare the routelist for next node, i.e. ignore the current node
     elif(cost_function == "mpg"):
-        pass
+        #solution = []
+        fringe = []
+        visited = {(source)}
+        heappush(fringe, (0, adj_list[source][1], [], source, adj_list[source], 0, 0))
+        while len(fringe) > 0:
+            (gas_used, cost_until_now, routeList, currentNode, state, time_taken, gas_used) = heappop(fringe)
+            for (succ, distance, SpeedLimit, highwayName) in successors(currentNode):#highwayName is redundant here
+                if succ == destination:
+                    hours = (distance/SpeedLimit)
+                    v = SpeedLimit
+                    gas = 400 * (v/150) * ((1 - (v/150))**4)
+                    return (cost_until_now + distance, routeList, time_taken+hours, gas_used+gas)
+                if (succ not in visited):# and (succ not in fringe):
+                    visited.add(succ)
+                    cost = distance + cost_until_now #+ #Call heuristic
+                    hours = (distance/SpeedLimit)
+                    v = SpeedLimit
+                    gas = 400 * (v/150) * ((1 - (v/150))**4)
+                    routeList.append(succ)#Add current node to our list
+                    heappush(fringe, (gas_used+gas, cost_until_now + distance, copy.deepcopy(routeList), succ, adj_list[succ], time_taken+hours, gas_used+gas))
+                    routeList.pop()#Prepare the routelist for next node, i.e. ignore the current node
     else:
         print("Should not have happened!")
 
@@ -109,12 +171,12 @@ if __name__ == "__main__":
         sys.exit()
 
     #Program starts here
-    createAdjList("C:\\Users\\Rohit\\Documents\\AI\\commit\\bagrawal-aahurkat-rrokde-a1\\part2\\road-segments.txt")
+    createAdjList('./road-segments.txt')
 
-    readGPScoordinates("C:\\Users\\Rohit\\Documents\\AI\\commit\\bagrawal-aahurkat-rrokde-a1\\part2\\city-gps.txt")
+    readGPScoordinates('./city-gps.txt')
 
-    source = sys.argv[1]#Bloomington,_Indiana
-    destination = sys.argv[2]#Detroit,_Michigan
+    source = sys.argv[1]#e.g.  Bloomington,_Indiana
+    destination = sys.argv[2]#e.g.  Detroit,_Michigan
 
 #    print("adjancency list format is:  ")
 #    for key in adj_list.keys():
@@ -124,7 +186,7 @@ if __name__ == "__main__":
 
     result = solve(source, destination, cost_function)
 
-    totalsegments = len(result[1])
+    totalsegments = len(result[1])+1  #Last segment is counted here as +1
     totalmiles = result[0]
     totalhours = result[2]
     totalgasgallons = result[3]
