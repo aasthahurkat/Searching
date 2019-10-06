@@ -7,7 +7,7 @@ def createAdjList(filename):
         for line in file:
             from_city = str.split(line)[0]
             to_city = str.split(line)[1]
-            length = str.split(line)[2]
+            length = int(str.split(line)[2])
             speed_limit = str.split(line)[3]
             highway_name = str.split(line)[4]
             if from_city in adj_list.keys():
@@ -32,7 +32,7 @@ def successors(currentNode):
 def solve(source, destination, cost_function):
     solution = []
     fringe = []
-    visited = []
+    visited = {(source)}
     #fringe = [ (visited, source, destination, 0) ] #Forth paramter is the travelled cost
     heappush(fringe, (adj_list[source][1], [], source, adj_list[source]))
     while len(fringe) > 0:
@@ -41,14 +41,13 @@ def solve(source, destination, cost_function):
             if succ == destination:
                 #time = 0
                 #gas = 0
-                return cost_until_now #Lets just return cost now. Will return the actual path later
+                return (cost_until_now + distance, routeList)
             if (succ not in visited):# and (succ not in fringe):
-                visited.append(succ)
-                
-                cost = distance #+ #Call heuristic
-
-                routeList.append(currentNode)
-                heappush(fringe, (cost, routeList, currentNode, adj_list[currentNode]))
+                visited.add(succ)
+                cost = distance + cost_until_now #+ #Call heuristic
+                routeList.append(succ)
+                heappush(fringe, (cost, copy.deepcopy(routeList), succ, adj_list[succ]))
+                routeList.pop()
 
 
 def calculateHeuristic(cost_function, args):
@@ -72,11 +71,17 @@ if __name__ == "__main__":
     createAdjList("/u/rrokde/bagrawal-aahurkat-rrokde-a1/part2/road-segments.txt")
 
        
-    print("adjancency list format is:  ")
-    for key in adj_list:
-        print("no of neighbours: ", len(adj_list[key]), " for city: ", key)
-        print(key, '->', adj_list[key])
-        break
+#    print("adjancency list format is:  ")
+#    for key in adj_list:
+#        print("no of neighbours: ", len(adj_list[key]), " for city: ", key)
+#        print(key, '->', adj_list[key])
+#        break
 
-    result = solve("West_Plains,_Missouri", "Willow_Springs,_Missouri", "distance")
-    print("Total distance = ", result)
+    source = "Bloomington,_Indiana"
+    destination = "Detroit,_Michigan"
+    result = solve(source, destination, "distance")
+    print("Total distance from ", source, " to ",  destination, " is " , result[0])
+    print("The route to take is ", source, " ->", end=" ")
+    for point in result[1]:
+        print(point, " ->", end=" ")
+    print(destination)
