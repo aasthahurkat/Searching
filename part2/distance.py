@@ -1,4 +1,5 @@
 import copy
+import sys
 from heapq import heappop, heappush
 
 adj_list = {}
@@ -14,6 +15,7 @@ def createAdjList(filename):
                 #old = adj_list[from_city][0]
                 adj_list[from_city][0].append((to_city,length,speed_limit,highway_name))
             else:
+                #Elements:- (List of neighbors, dummy travelled cost, placeholder for latitude, placeholder for longitude).
                 adj_list[from_city] = ([], 0, 0, 0)
                 adj_list[from_city][0].append((to_city,length,speed_limit,highway_name))
 
@@ -23,32 +25,49 @@ def createAdjList(filename):
             else:
                 adj_list[to_city] = ([], 0, 0, 0)
                 adj_list[to_city][0].append((from_city,length,speed_limit,highway_name))
- 
+
+def readGPScoordinates(filename):
+    with open(filename,'r') as file:
+        for line in file:
+            cityName = str.split(line)[0]
+            latitude = float(str.split(line)[1])
+            longitude = float(str.split(line)[2])
+            if cityName in adj_list.keys():
+                nodeObject = adj_list[cityName]
+                adj_list[cityName] = (nodeObject[0], nodeObject[1], latitude, longitude)
+
 def successors(currentNode):
 
     return adj_list[currentNode][0] #Returning only the neighbour list
-    #return [(copy.deepcopy(possible_list), neighbour, source, destination, travelled_cost ) for neighbour in adj_list[source]]
 
 def solve(source, destination, cost_function):
-    solution = []
-    fringe = []
-    visited = {(source)}
-    #fringe = [ (visited, source, destination, 0) ] #Forth paramter is the travelled cost
-    heappush(fringe, (adj_list[source][1], [], source, adj_list[source]))
-    while len(fringe) > 0:
-        (cost_until_now, routeList, currentNode, state) = heappop(fringe)
-        for (succ, distance, SpeedLimit, highwayName) in successors(currentNode):
-            if succ == destination:
-                #time = 0
-                #gas = 0
-                return (cost_until_now + distance, routeList)
-            if (succ not in visited):# and (succ not in fringe):
-                visited.add(succ)
-                cost = distance + cost_until_now #+ #Call heuristic
-                routeList.append(succ)
-                heappush(fringe, (cost, copy.deepcopy(routeList), succ, adj_list[succ]))
-                routeList.pop()
 
+    if(cost_function == "segments"):
+        pass
+    elif(cost_function == "distance"):
+        #solution = []
+        fringe = []
+        visited = {(source)}
+        heappush(fringe, (adj_list[source][1], [], source, adj_list[source]))
+        while len(fringe) > 0:
+            (cost_until_now, routeList, currentNode, state) = heappop(fringe)
+            for (succ, distance, SpeedLimit, highwayName) in successors(currentNode):#Speedlimit and highwayName are redundant here
+                if succ == destination:
+                    #time = 0
+                    #gas = 0
+                    return (cost_until_now + distance, routeList)
+                if (succ not in visited):# and (succ not in fringe):
+                    visited.add(succ)
+                    cost = distance + cost_until_now #+ #Call heuristic
+                    routeList.append(succ)#Add current node to our list
+                    heappush(fringe, (cost, copy.deepcopy(routeList), succ, adj_list[succ]))
+                    routeList.pop()#Prepare the routelist for next node, i.e. ignore the current node
+    elif(cost_function == "time"):
+        pass
+    elif(cost_function == "mpg"):
+        pass
+    else:
+        print("Should not have happened!")
 
 def calculateHeuristic(cost_function, args):
     if(cost_function == "segments"):
@@ -68,20 +87,44 @@ def calculateHeuristic(cost_function, args):
 
 if __name__ == "__main__":
 
-    createAdjList("/u/rrokde/bagrawal-aahurkat-rrokde-a1/part2/road-segments.txt")
+    #Check if all the arguments are valid
+    if(len(sys.argv) != 4):
+        raise(Exception("Error: expected 2 arguments"))
 
-       
+    cost_function = sys.argv[3]
+    if(cost_function == "segments"):
+        pass
+    elif(cost_function == "distance"):
+        pass
+    elif(cost_function == "time"):
+        pass
+    elif(cost_function == "mpg"):
+        pass
+    else:
+        print("Please enter a valid cost-function")
+        sys.exit()
+
+    #Program starts here
+    createAdjList("C:\\Users\\Rohit\\Documents\\AI\\commit\\bagrawal-aahurkat-rrokde-a1\\part2\\road-segments.txt")
+
+    readGPScoordinates("C:\\Users\\Rohit\\Documents\\AI\\commit\\bagrawal-aahurkat-rrokde-a1\\part2\\city-gps.txt")
+
+    source = sys.argv[1]#Bloomington,_Indiana
+    destination = sys.argv[2]#Detroit,_Michigan
+
 #    print("adjancency list format is:  ")
-#    for key in adj_list:
+#    for key in adj_list.keys():
 #        print("no of neighbours: ", len(adj_list[key]), " for city: ", key)
 #        print(key, '->', adj_list[key])
 #        break
 
-    source = "Bloomington,_Indiana"
-    destination = "Detroit,_Michigan"
-    result = solve(source, destination, "distance")
-    print("Total distance from ", source, " to ",  destination, " is " , result[0])
-    print("The route to take is ", source, " ->", end=" ")
+    result = solve(source, destination, cost_function)
+
+    totalsegments = len(result[1])
+    totalmiles = result[0]
+    totalhours = "0"
+    totalgasgallons = "0"
+    print(totalsegments, totalmiles, totalhours, totalgasgallons, source, end=" ")
     for point in result[1]:
-        print(point, " ->", end=" ")
+        print(point, end=" ")
     print(destination)
