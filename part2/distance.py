@@ -9,7 +9,7 @@ def createAdjList(filename):
             from_city = str.split(line)[0]
             to_city = str.split(line)[1]
             length = int(str.split(line)[2])
-            speed_limit = str.split(line)[3]
+            speed_limit = float(str.split(line)[3])
             highway_name = str.split(line)[4]
             if from_city in adj_list.keys():
                 #old = adj_list[from_city][0]
@@ -48,19 +48,23 @@ def solve(source, destination, cost_function):
         #solution = []
         fringe = []
         visited = {(source)}
-        heappush(fringe, (adj_list[source][1], [], source, adj_list[source]))
+        heappush(fringe, (adj_list[source][1], [], source, adj_list[source], 0, 0))
         while len(fringe) > 0:
-            (cost_until_now, routeList, currentNode, state) = heappop(fringe)
+            (cost_until_now, routeList, currentNode, state, time_taken, gas_used) = heappop(fringe)
             for (succ, distance, SpeedLimit, highwayName) in successors(currentNode):#Speedlimit and highwayName are redundant here
                 if succ == destination:
-                    #time = 0
-                    #gas = 0
-                    return (cost_until_now + distance, routeList)
+                    hours = (distance/SpeedLimit)
+                    v = SpeedLimit
+                    gas = 400 * (v/150) * ((1 - (v/150))**4)
+                    return (cost_until_now + distance, routeList, time_taken+hours, gas_used+gas)
                 if (succ not in visited):# and (succ not in fringe):
                     visited.add(succ)
                     cost = distance + cost_until_now #+ #Call heuristic
+                    hours = (distance/SpeedLimit)
+                    v = SpeedLimit
+                    gas = 400 * (v/150) * ((1 - (v/150))**4)
                     routeList.append(succ)#Add current node to our list
-                    heappush(fringe, (cost, copy.deepcopy(routeList), succ, adj_list[succ]))
+                    heappush(fringe, (cost, copy.deepcopy(routeList), succ, adj_list[succ], time_taken+hours, gas_used+gas))
                     routeList.pop()#Prepare the routelist for next node, i.e. ignore the current node
     elif(cost_function == "time"):
         pass
@@ -122,9 +126,9 @@ if __name__ == "__main__":
 
     totalsegments = len(result[1])
     totalmiles = result[0]
-    totalhours = "0"
-    totalgasgallons = "0"
-    print(totalsegments, totalmiles, totalhours, totalgasgallons, source, end=" ")
+    totalhours = result[2]
+    totalgasgallons = result[3]
+    print("%d %d %.4f %.4f %s" % ((totalsegments, totalmiles, totalhours, totalgasgallons, source)), end=" ")
     for point in result[1]:
         print(point, end=" ")
     print(destination)
