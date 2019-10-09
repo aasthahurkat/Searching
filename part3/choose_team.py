@@ -10,7 +10,7 @@ import sys
 import copy
 
 def load_people(filename):
-    people={}
+    people={} #Used a dictionary for faster access of person data.
     with open(filename, "r") as file:
         for line in file:
             l = line.split()
@@ -52,6 +52,7 @@ def successors(args):
 
 #Need this global variable to access the sorted list in successor
 people_sorted = []
+
 # This function implements a branch and bound solution to the problem:
 #
 def solve(people, budget):
@@ -67,10 +68,10 @@ def solve(people, budget):
     while len(fringe) > 0 and not endpoint:
         elem = fringe.pop()
         for (robot, skill, cost, possible_list, skill_sum, budget_for_this_selection) in successors(elem):
-            if(skill == -1):
+            if(skill == -1):#This condition will be selected when the budget is exhausted for the current selection
                 solution.append( (possible_list, skill_sum, budget_for_this_selection))
                 continue
-            if(skill == -2):
+            if(skill == -2):#This condition will be invoked when all the persons in the poeple list are selected.
                 solution.append( (possible_list, skill_sum, budget_for_this_selection))
                 continue
             if(skill == 0 and cost == 0):
@@ -80,16 +81,14 @@ def solve(people, budget):
 
             possible_list.append((robot, skill, cost))
             fringe.append( (possible_list, skill_sum, budget_for_this_selection) )
-            #print("len(fringe) ", len(fringe))
 
             if(len(possible_list) >= len(people_sorted)):
                 solution.append((possible_list, skill_sum, budget_for_this_selection))
-                endpoint = True #If the list reaches the end point, it means we have taken all the persons and budget could accomodate that
+                endpoint = True #If the list reaches the end point, it means we have taken all the persons, and the budget could accomodate that
 
     #Sort according to skill and return the first element.
     sorted_solution = sorted([t for t in solution], key=lambda x: x[1], reverse=True)
 
-    #print("solution ", sorted_solution)
     if(len(sorted_solution) > 0):
         return sorted_solution[0]
     else:

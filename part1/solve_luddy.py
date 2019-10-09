@@ -10,6 +10,7 @@ import sys
 from heapq import heappop,heappush
 import math
 
+#Following code given in the below function is taken from https://stackoverflow.com/questions/34570344/check-if-15-puzzle-is-solvable
 def isSolvable(puzzle):
     gridWidth = int(math.sqrt(len(puzzle)))
     parity = 0
@@ -27,13 +28,11 @@ def isSolvable(puzzle):
                 parity += +1
     if (gridWidth % 2 == 0): #even grid
         if (((blankRow) % 2) == 0): #blank on odd row; counting from bottom
-            return True
-        elif ((parity % 2) != 0):
-            return True  #blank on even row; counting from bottom 
-    elif ((parity % 2) == 0):   #{ // odd grid
-        return True
-    else:
-        return False
+            return ((parity % 2) == 0)
+        else:
+            return ((parity % 2) != 0) #blank on even row; counting from bottom
+    else: #{ // odd grid
+        return ((parity % 2) == 0)
 
 MOVES = { "R": (0, -1), "L": (0, 1), "D": (-1, 0), "U": (1,0) }
 
