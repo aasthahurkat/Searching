@@ -1,11 +1,11 @@
 #!/usr/local/bin/python3
 # solve_luddy.py : Sliding tile puzzle solver
 #
-# Code by: [PLEASE PUT YOUR NAMES AND USER IDS HERE]
+# Code by: [Bhumika Agrawal - bagrawal, Aastha Hurkat - aahurkat, Rohit Rokde - rrokde]
 #
 # Based on skeleton code by D. Crandall, September 2019
 #
-from queue import PriorityQueue
+
 import sys
 from heapq import heappop,heappush
 import math
@@ -33,8 +33,7 @@ def isSolvable(puzzle):
             return ((parity % 2) != 0) #blank on even row; counting from bottom
     else: #{ // odd grid
         return ((parity % 2) == 0)
-
-MOVES = { "R": (0, -1), "L": (0, 1), "D": (-1, 0), "U": (1,0) }
+# End of code taken from stackoverflow
 
 def rowcol2ind(row, col):
     return row*4 + col
@@ -69,10 +68,10 @@ def successors(state):
 def is_goal(state):
     return sorted(state[:-1]) == list(state[:-1]) and state[-1]==0
 
-
-def solve2(initial_board):
+def solve(initial_board):
     fringe =[]
     visited =set()
+    # Populate fringe with (Cost of route, Route Taken, Current State)
     heappush(fringe, ("","",initial_board))
     while len(fringe) > 0:
         (cost, route_so_far, state) = heappop(fringe)
@@ -99,52 +98,30 @@ def calculate_heuristic(state):
 
 # test cases
 if __name__ == "__main__":
-    #if(len(sys.argv) != 3):
-      #  raise(Exception("Error: expected 2 arguments"))
+    if(len(sys.argv) != 3):
+        raise(Exception("Error: expected 2 arguments"))
     start_state = []
     with open(sys.argv[1], 'r') as file:
         for line in file:
             start_state += [ int(i) for i in line.split() ]
     
-    if isSolvable(start_state)==True:
+    if len(start_state) != 16:
+        raise(Exception("Error: couldn't parse start state file"))
 
+    if isSolvable(start_state)==True:
         if(sys.argv[2] == "original"):
-            MOVES = { "R": (0, -1), "L": (0, 1), "D": (-1, 0), "U": (1,0) }
-            
-            if len(start_state) != 16:
-                raise(Exception("Error: couldn't parse start state file"))
-        
-            print("Start state: \n" +"\n".join(printable_board(tuple(start_state))))
-        
-            print("Solving...")
-            route = solve2(tuple(start_state))
-            
-            print("Solution found in " + str(len(route)) + " moves:" + "\n" + route)
-            
+            MOVES = { "R": (0, -1), "L": (0, 1), "D": (-1, 0), "U": (1,0) }   
             
         elif(sys.argv[2] == "circular"):
-            MOVES = { "R": (0, -1), "L": (0, 1), "D": (-1, 0), "U": (1,0), "M": (0, -3), "N": (0, +3), "O": (-3, 0), "P": (+3, 0)}
-            if len(start_state) != 16:
-                raise(Exception("Error: couldn't parse start state file"))
+            MOVES = { "R": (0, -1), "L": (0, 1), "D": (-1, 0), "U": (1,0), "M": (0, -3), "N": (0, +3), "O": (-3, 0), "P": (+3, 0)}    
 
-            print("Start state: \n" +"\n".join(printable_board(tuple(start_state))))
-
-            print("Solving...")
-            route = solve2(tuple(start_state))
-        
-            print("Solution found in " + str(len(route)) + " moves:" + "\n" + route)
-            
         elif(sys.argv[2] == "luddy"):
             MOVES = {"E": (1, 2), "G": (-1, 2), "B": (2, -1),"D": (-2, -1),"H": (-1, -2),"F": (1, -2),"C": (-2, 1),"A": (2, 1)}
-            if len(start_state) != 16:
-                raise(Exception("Error: couldn't parse start state file"))
 
-            print("Start state: \n" +"\n".join(printable_board(tuple(start_state))))
+        print("Start state: \n" +"\n".join(printable_board(tuple(start_state))))
 
-            print("Solving...")
-            route = solve2(tuple(start_state))
-            
-            print("Solution found in " + str(len(route)) + " moves:" + "\n" + route)
+        print("Solving...")
+        route = solve(tuple(start_state))           
+        print("Solution found in " + str(len(route)) + " moves:" + "\n" + route)
     else:
         print("Inf")
-
