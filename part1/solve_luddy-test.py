@@ -107,11 +107,11 @@ def calculate_heuristic(state):
 
 # test cases
 if __name__ == "__main__":
-    #if(len(sys.argv) != 3):
-     #   raise(Exception("Error: expected 2 arguments"))
+    if(len(sys.argv) != 3):
+        raise(Exception("Error: expected 2 arguments"))
     start_state = []
-    #with open(sys.argv[1], 'r') as file:
-    with open('./boardtest.txt', 'r') as file:
+    with open(sys.argv[1], 'r') as file:
+    #with open('./boardtest.txt', 'r') as file:
         for line in file:
             start_state += [ int(i) for i in line.split() ]
     
