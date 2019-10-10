@@ -50,16 +50,16 @@ def solve_segments(source,destination):
     visited = {(source)}
     heappush(fringe, (0, adj_list[source][1], [], source, 0, 0))
     while len(fringe) > 0:
-        (segments_until_now, cost_until_now, routeList, currentNode, time_taken, gas_used) = heappop(fringe)
-        for (succ, distance, SpeedLimit) in successors(currentNode):
-            hours = (distance/SpeedLimit)
-            gas = (400 * (SpeedLimit/150) * ((1 - (SpeedLimit/150))**4))/distance
+        (segments_until_now, distance_travelled, routeList, currentNode, time_taken, gas_used) = heappop(fringe)
+        for (succ, length, SpeedLimit) in successors(currentNode):
+            hours = (length/SpeedLimit)
+            gas = (400 * (SpeedLimit/150) * ((1 - (SpeedLimit/150))**4))/length
             if succ == destination:
-                return (cost_until_now + distance, routeList, time_taken+hours, gas_used+gas)
+                return (distance_travelled + length, routeList, time_taken+hours, gas_used+gas)
             if (succ not in visited):
                 visited.add(succ)      
                 routeList.append(succ)                               #Add current node to our list
-                heappush(fringe, (len(routeList), cost_until_now + distance, copy.deepcopy(routeList), succ, time_taken+hours, gas_used+gas))
+                heappush(fringe, (len(routeList), distance_travelled + length, copy.deepcopy(routeList), succ, time_taken+hours, gas_used+gas))
                 routeList.pop()                                      #Prepare the routelist for next node, i.e. ignore the current node
 
 def solve_distance(source,destination):
@@ -67,15 +67,15 @@ def solve_distance(source,destination):
     visited = {(source)}
     heappush(fringe, (cal_heuristic(source,destination) , adj_list[source][1], [], source, 0, 0))
     while len(fringe) > 0:
-        (heuristic_val, cost_until_now, routeList, currentNode, time_taken, gas_used) = heappop(fringe)
-        for (succ, distance, SpeedLimit) in successors(currentNode):
-            hours = (distance/SpeedLimit)
-            gas = (400 * (SpeedLimit/150) * ((1 - (SpeedLimit/150))**4))/distance
+        (heuristic_val, distance_travelled, routeList, currentNode, time_taken, gas_used) = heappop(fringe)
+        for (succ, length, SpeedLimit) in successors(currentNode):
+            hours = (length/SpeedLimit)
+            gas = (400 * (SpeedLimit/150) * ((1 - (SpeedLimit/150))**4))/length
             if succ == destination:
-                return (cost_until_now + distance, routeList, time_taken+hours, gas_used+gas)
+                return (distance_travelled + length, routeList, time_taken+hours, gas_used+gas)
             if (succ not in visited):
                 visited.add(succ)
-                cost = distance + cost_until_now                                 
+                cost = length + distance_travelled                                 
                 routeList.append(succ)                                           #Add current node to our list
                 heappush(fringe, (cost + cal_heuristic(succ,destination), cost, copy.deepcopy(routeList), succ, time_taken+hours, gas_used+gas))
                 routeList.pop()                                                  #Prepare the routelist for next node, i.e. ignore the current node
@@ -85,16 +85,16 @@ def solve_time(source,destination):
     visited = {(source)}
     heappush(fringe, (0, adj_list[source][1], [], source, 0))
     while len(fringe) > 0:
-        (time_taken, cost_until_now, routeList, currentNode, gas_used) = heappop(fringe)
-        for (succ, distance, SpeedLimit) in successors(currentNode):
-            hours = (distance/SpeedLimit)
-            gas = (400 * (SpeedLimit/150) * ((1 - (SpeedLimit/150))**4))/distance
+        (time_taken, distance_travelled, routeList, currentNode, gas_used) = heappop(fringe)
+        for (succ, length, SpeedLimit) in successors(currentNode):
+            hours = (length/SpeedLimit)
+            gas = (400 * (SpeedLimit/150) * ((1 - (SpeedLimit/150))**4))/length
             if succ == destination:
-                return (cost_until_now + distance, routeList, time_taken+hours, gas_used+gas)
+                return (distance_travelled + length, routeList, time_taken+hours, gas_used+gas)
             if (succ not in visited):   
                 visited.add(succ)
                 routeList.append(succ)                                     #Add current node to our list
-                heappush(fringe, (time_taken+hours, cost_until_now + distance, copy.deepcopy(routeList), succ, gas_used+gas))
+                heappush(fringe, (time_taken+hours, distance_travelled + length, copy.deepcopy(routeList), succ, gas_used+gas))
                 routeList.pop()                                           #Prepare the routelist for next node, i.e. ignore the current node
 
 def solve_mpg(source,destination):
@@ -102,16 +102,16 @@ def solve_mpg(source,destination):
     visited = {(source)}
     heappush(fringe, (0, adj_list[source][1], [], source, 0))
     while len(fringe) > 0:
-        (gas_used, cost_until_now, routeList, currentNode, time_taken) = heappop(fringe)
-        for (succ, distance, SpeedLimit) in successors(currentNode):
-            hours = (distance/SpeedLimit)
-            gas = (400 * (SpeedLimit/150) * ((1 - (SpeedLimit/150))**4))/distance
+        (gas_used, distance_travelled, routeList, currentNode, time_taken) = heappop(fringe)
+        for (succ, length, SpeedLimit) in successors(currentNode):
+            hours = (length/SpeedLimit)
+            gas = (400 * (SpeedLimit/150) * ((1 - (SpeedLimit/150))**4))/length
             if succ == destination:        
-                return (cost_until_now + distance, routeList, time_taken+hours, gas_used+gas)
+                return (distance_travelled + length, routeList, time_taken+hours, gas_used+gas)
             if (succ not in visited):
                 visited.add(succ)
                 routeList.append(succ)                                      #Add current node to our list
-                heappush(fringe, (gas_used+gas, cost_until_now + distance, copy.deepcopy(routeList), succ, time_taken+hours))
+                heappush(fringe, (gas_used+gas, distance_travelled + length, copy.deepcopy(routeList), succ, time_taken+hours))
                 routeList.pop()                                             #Prepare the routelist for next node, i.e. ignore the current node       
 
 if __name__ == "__main__":
