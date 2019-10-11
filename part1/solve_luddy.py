@@ -165,8 +165,8 @@ if __name__ == "__main__":
     if(len(sys.argv) != 3):
         raise(Exception("Error: expected 2 arguments"))
     start_state = []
-    
-    with open('./boardtest.txt', 'r') as file:
+    filename = sys.argv[1]
+    with open(filename, 'r') as file:
         for line in file:
             start_state += [ int(i) for i in line.split() ]
     
