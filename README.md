@@ -44,6 +44,9 @@ A set of the nodes that are connected to the current state with a segment given 
 Cost Function -
 The Euclidean distance between any two states. This has been calculated as the Haversine distance.
 
+Search Algorithm -
+A* search algorithm has been used to solve this problem. The graph is represented using an adjacency matrix and dictionary is used to keep track of neighbours and latitude and longitude of each state. The neighbours in the value of each key is in turn, a tuple of successor state and all relevant features like distance and speed limit.
+
 Potential Issues -
 The code does not always provide the most optimal solution for longer routes. We have identified two possible reasons -
 1. To deal with inconsistencies in the data set where latitude and longitude is missing the cost function returns 0 value.
