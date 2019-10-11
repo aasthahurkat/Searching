@@ -30,11 +30,14 @@ def readGPScoordinates(filename):
             if cityName in adj_list.keys():
                 nodeObject = adj_list[cityName]
                 adj_list[cityName] = (nodeObject[0], nodeObject[1], latitude, longitude)
+                
+# The following function has been taken from https://stackoverflow.com/questions/19412462/getting-distance-between-two-points-based-on-latitude-longitude
 
 def cal_distance(lat1, lon1, lat2, lon2):
     p = 0.017453292519943295     #Pi/180
     a = 0.5 - cos((lat2 - lat1) * p)/2 + cos(lat1 * p) * cos(lat2 * p) * (1 - cos((lon2 - lon1) * p)) / 2
     return 12742 * asin(sqrt(a))
+# End of code from stackoverflow.
 
 def cal_heuristic(current,destination):
     if adj_list[current][1] == 0 or adj_list[current][2] == 0:
