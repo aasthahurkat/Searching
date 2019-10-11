@@ -172,7 +172,7 @@ if __name__ == "__main__":
     
     if len(start_state) != 16:
         raise(Exception("Error: couldn't parse start state file"))
-
+    version = sys.argv[2]
     if isSolvable(start_state)==True:
 
         if(version == "original"):
