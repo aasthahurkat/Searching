@@ -74,6 +74,7 @@ def successors(state):
             result.append((cost, c, temp))
     return result
 
+# Returns a list of possible successor states for Luddy variation
 def successors2(state):
     (empty_row, empty_col) = ind2rowcol(state.index(0))
     result = []
@@ -112,7 +113,7 @@ def solve(initial_board):
                     heappush(fringe,(open_state[succ][0],open_state[succ][1], succ))
     return False
 
-
+# Function to solve Luddy variation
 def solve2(initial_board):
     fringe = []
     open_state = {}
@@ -150,6 +151,7 @@ def calculate_heuristic(state):
             cost += abs(3 - curr_row) + abs(3 - curr_col)
     return cost
 
+# Function to calculate heuristic for Luddy variation
 def calculate_heuristic2(state):
     cost = 0
     for i in range(len(state)):
@@ -160,7 +162,6 @@ def calculate_heuristic2(state):
             continue
     return cost
 
-# test cases
 if __name__ == "__main__":
     if(len(sys.argv) != 3):
         raise(Exception("Error: expected 2 arguments"))
