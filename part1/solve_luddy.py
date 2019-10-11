@@ -11,6 +11,7 @@ from heapq import heappop,heappush
 import math
 
 #Following code given in the below function is taken from https://stackoverflow.com/questions/34570344/check-if-15-puzzle-is-solvable
+#some editions were made to this code
 def isSolvable(puzzle):
     gridWidth = int(math.sqrt(len(puzzle)))
     parity = 0
@@ -25,14 +26,23 @@ def isSolvable(puzzle):
             continue
         for j in range(i+1, len(puzzle)):
             if (puzzle[i] > puzzle[j] and puzzle[j] != 0):
-                parity += +1
+                parity += 1
     if (gridWidth % 2 == 0): #even grid
         if (((blankRow) % 2) == 0): #blank on odd row; counting from bottom
-            return ((parity % 2) == 0)
+            if ((parity % 2) == 0):
+                return True
+            else:
+                return False
         else:
-            return ((parity % 2) != 0) #blank on even row; counting from bottom
+            if ((parity % 2) != 0): #blank on even row; counting from bottom
+                return True
+            else:
+                return False
     else: #{ // odd grid
-        return ((parity % 2) == 0)
+        if ((parity % 2) == 0):
+            return True
+        else:
+            return False
 # End of code taken from stackoverflow
 
 def rowcol2ind(row, col):
@@ -64,23 +74,67 @@ def successors(state):
             result.append((cost, c, temp))
     return result
 
+def successors2(state):
+    (empty_row, empty_col) = ind2rowcol(state.index(0))
+    result = []
+    for (c, (i, j)) in MOVES.items():
+        if valid_index(empty_row+i, empty_col+j):
+            temp = swap_tiles(state, empty_row, empty_col, empty_row+i, empty_col+j)
+            cost = calculate_heuristic2(temp)
+            result.append((cost, c, temp))
+    return result
+
 # check if we've reached the goal
 def is_goal(state):
     return sorted(state[:-1]) == list(state[:-1]) and state[-1]==0
 
 def solve(initial_board):
-    fringe =[]
+    fringe = []
+    open_state = {}
     visited =set()
+    open_state[initial_board] = (0,"")
     # Populate fringe with (Cost of route, Route Taken, Current State)
-    heappush(fringe, ("","",initial_board))
+    heappush(fringe,(open_state[initial_board][0],open_state[initial_board][1],initial_board))
     while len(fringe) > 0:
         (cost, route_so_far, state) = heappop(fringe)
         visited.add(state)
-        for (cost, move, succ) in successors( state ):
+        for (cost, move, succ) in successors(state):
+            #open_state[succ] = (cost, move)
             if is_goal(succ):
                 return( route_so_far + move )
             if succ not in visited:
-                heappush(fringe,(len(route_so_far) + cost, route_so_far + move, succ)) 
+                if succ in open_state.keys():
+                    old_cost = open_state[succ][0]
+                    if old_cost > cost:
+                        del open_state[succ]
+                if succ not in open_state.keys():
+                    open_state[succ] = (len(route_so_far) + cost, route_so_far + move)
+                    heappush(fringe,(open_state[succ][0],open_state[succ][1], succ))
+    return False
+
+
+def solve2(initial_board):
+    fringe = []
+    open_state = {}
+    visited =set()
+    open_state[initial_board] = (0,"")
+    # Populate fringe with (Cost of route, Route Taken, Current State)
+    heappush(fringe,(open_state[initial_board][0],open_state[initial_board][1],initial_board))
+    while len(fringe) > 0:
+        (cost, route_so_far, state) = heappop(fringe)
+        visited.add(state)
+        for (cost, move, succ) in successors2(state):
+            #open_state[succ] = (cost, move)
+            if is_goal(succ):
+                return( route_so_far + move )
+            if succ not in visited:
+                if succ in open_state.keys():
+                    old_cost = open_state[succ][0]
+                    if old_cost > cost:
+                        del open_state[succ]
+                if succ not in open_state.keys():
+                    open_state[succ] = (len(route_so_far) + cost, route_so_far + move)
+                    heappush(fringe,(open_state[succ][0],open_state[succ][1], succ))
     return False
 
 def calculate_heuristic(state):
@@ -96,32 +150,54 @@ def calculate_heuristic(state):
             cost += abs(3 - curr_row) + abs(3 - curr_col)
     return cost
 
+def calculate_heuristic2(state):
+    cost = 0
+    for i in range(len(state)):
+        num = state[i]
+        if num != i+1 and num != 0:
+            cost += 1
+        elif num == 0:
+            continue
+    return cost
+
 # test cases
 if __name__ == "__main__":
-    if(len(sys.argv) != 3):
-        raise(Exception("Error: expected 2 arguments"))
+    #if(len(sys.argv) != 3):
+      #  raise(Exception("Error: expected 2 arguments"))
     start_state = []
-    with open(sys.argv[1], 'r') as file:
+    with open('C:\\Users\\HP\\Downloads\\Board4test.txt', 'r') as file:
+    #with open('./boardtest.txt', 'r') as file:
         for line in file:
             start_state += [ int(i) for i in line.split() ]
     
     if len(start_state) != 16:
         raise(Exception("Error: couldn't parse start state file"))
 
+    version = "luddy"
+    #MOVES = {"E": (1, 2), "G": (-1, 2), "B": (2, -1),"D": (-2, -1),"H": (-1, -2),"F": (1, -2),"C": (-2, 1),"A": (2, 1)}
     if isSolvable(start_state)==True:
-        if(sys.argv[2] == "original"):
+
+        if(version == "original"):
             MOVES = { "R": (0, -1), "L": (0, 1), "D": (-1, 0), "U": (1,0) }   
-            
-        elif(sys.argv[2] == "circular"):
+            print("Start state: \n" +"\n".join(printable_board(tuple(start_state))))
+            print("Solving...")
+            route = solve(tuple(start_state))           
+            print("Solution found in " + str(len(route)) + " moves:" + "\n" + route)
+
+        elif(version == "circular"):
             MOVES = { "R": (0, -1), "L": (0, 1), "D": (-1, 0), "U": (1,0), "M": (0, -3), "N": (0, +3), "O": (-3, 0), "P": (+3, 0)}    
+            print("Start state: \n" +"\n".join(printable_board(tuple(start_state))))
+            print("Solving...")
+            route = solve(tuple(start_state))           
+            print("Solution found in " + str(len(route)) + " moves:" + "\n" + route)
 
-        elif(sys.argv[2] == "luddy"):
+        elif(version == "luddy"):
             MOVES = {"E": (1, 2), "G": (-1, 2), "B": (2, -1),"D": (-2, -1),"H": (-1, -2),"F": (1, -2),"C": (-2, 1),"A": (2, 1)}
-
-        print("Start state: \n" +"\n".join(printable_board(tuple(start_state))))
-
-        print("Solving...")
-        route = solve(tuple(start_state))           
-        print("Solution found in " + str(len(route)) + " moves:" + "\n" + route)
+            print("Start state: \n" +"\n".join(printable_board(tuple(start_state))))
+            print("Solving...")
+            route = solve2(tuple(start_state))           
+            print("Solution found in " + str(len(route)) + " moves:" + "\n" + route)
+        
     else:
         print("Inf")
+
