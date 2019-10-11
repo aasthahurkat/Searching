@@ -162,19 +162,17 @@ def calculate_heuristic2(state):
 
 # test cases
 if __name__ == "__main__":
-    #if(len(sys.argv) != 3):
-      #  raise(Exception("Error: expected 2 arguments"))
+    if(len(sys.argv) != 3):
+        raise(Exception("Error: expected 2 arguments"))
     start_state = []
-    with open('C:\\Users\\HP\\Downloads\\Board4test.txt', 'r') as file:
-    #with open('./boardtest.txt', 'r') as file:
+    
+    with open('./boardtest.txt', 'r') as file:
         for line in file:
             start_state += [ int(i) for i in line.split() ]
     
     if len(start_state) != 16:
         raise(Exception("Error: couldn't parse start state file"))
 
-    version = "luddy"
-    #MOVES = {"E": (1, 2), "G": (-1, 2), "B": (2, -1),"D": (-2, -1),"H": (-1, -2),"F": (1, -2),"C": (-2, 1),"A": (2, 1)}
     if isSolvable(start_state)==True:
 
         if(version == "original"):
