@@ -52,7 +52,7 @@ def successors(args):
 
 #Need this global variable to access the sorted list in successor
 people_sorted = []
-
+visited = {}
 # This function implements a branch and bound solution to the problem:
 #
 def solve(people, budget):
@@ -69,18 +69,47 @@ def solve(people, budget):
         elem = fringe.pop()
         for (robot, skill, cost, possible_list, skill_sum, budget_for_this_selection) in successors(elem):
             if(skill == -1):#This condition will be selected when the budget is exhausted for the current selection
+                key_gen = ""
+                possible_list_temp = sorted(possible_list, key=lambda x: x[0])
+                for i in possible_list_temp:
+                    key_gen += i[0] + " "
+                #print("key_gen", key_gen)
+                if key_gen not in visited:
+                    visited[key_gen] = key_gen
                 solution.append( (possible_list, skill_sum, budget_for_this_selection))
                 continue
             if(skill == -2):#This condition will be invoked when all the persons in the poeple list are selected.
+                key_gen = ""
+                possible_list_temp = sorted(possible_list, key=lambda x: x[0])
+                for i in possible_list_temp:
+                    key_gen += i[0] + " "
+                #print("key_gen", key_gen)
+                if key_gen not in visited:
+                    visited[key_gen] = key_gen
                 solution.append( (possible_list, skill_sum, budget_for_this_selection))
                 continue
             if(skill == 0 and cost == 0):
+                key_gen = ""
+                possible_list_temp = sorted(possible_list, key=lambda x: x[0])
+                for i in possible_list_temp:
+                    key_gen += i[0] + " "
+                #print("key_gen", key_gen)
+                if key_gen not in visited:
+                    visited[key_gen] = key_gen
                 solution.append( (possible_list, skill_sum, budget_for_this_selection) )
                 endpoint = True
                 break
 
             possible_list.append((robot, skill, cost))
-            fringe.append( (possible_list, skill_sum, budget_for_this_selection) )
+            key_gen = ""
+            possible_list_temp = sorted(possible_list, key=lambda x: x[0])
+            for i in possible_list_temp:
+                key_gen += i[0] + " "
+            #print("key_gen", key_gen)
+            #print(possible_list_temp)
+            if key_gen not in visited:
+                visited[key_gen] = key_gen
+                fringe.append( (possible_list, skill_sum, budget_for_this_selection) )
 
             if(len(possible_list) >= len(people_sorted)):
                 solution.append((possible_list, skill_sum, budget_for_this_selection))
@@ -88,7 +117,8 @@ def solve(people, budget):
 
     #Sort according to skill and return the first element.
     sorted_solution = sorted([t for t in solution], key=lambda x: x[1], reverse=True)
-
+    #for pp in sorted_solution:
+    #    print(pp)
     if(len(sorted_solution) > 0):
         return sorted_solution[0]
     else:
