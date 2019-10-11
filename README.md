@@ -1,11 +1,34 @@
-Problem 1
+Part 1:
+Initial State -
+The state provided as an input
 
+Goal State -
+A grid where the numbers are arranged sequentially with 0(blank tile) at the end.
+
+State Space -
+A list of all the configurations the state can take up.
+
+Successors -
+The configurations that can follow a current state with the valid possible moves. It would vary depending on the variations - original, circular and luddy.
+
+Cost Function -
+Initially, the code worked on Manhattan distance as a cost function only. But, this cost function did not prove to be very effective for luddy so we used the number of mispaced tiles and that worked far better for luddy but was slower on original and circular variations. So, we decided to use Manhattan distance for the latter versions.
+
+Search Algorithm -
+We have implemented the search algorithm #3 discussed in the class to solve this problem.
 We need to find out the solution to a 15 puzzle problem with slightly modified rules.
 The first case, however works on the typical rules of the game. Out first step was to check whether the puzzle is solvable or not. The function isSolvable() in the program is for the same.
 For the second case, we introduced the extra moves which are allowed for the circular moves. If the circular moves are allowed, all the blocks in the puzzle get 4 possible moves - unlike in the original one.
 The third case is similar to how a knight moves on a chess board. We defined the moves of the puzzle
 
-Part2 :
+Potential Issues -
+The Luddy version does not always give the solution within the time limits.
+
+Code Fix -
+A better solution would be to use heuristic to be a combination of Manhattan distance and linear inversions for Luddy. 
+
+
+Part 2 :
 Initial State -
 Source city given as input
 
@@ -14,11 +37,12 @@ Destination city given as output
 
 State Space -
 A list of all the cities and the highway junctions. The state space has been treated as a graph with individual states representing the nodes of the graph.
+
 Successors -
 A set of the nodes that are connected to the current state with a segment given in 'road-segments.txt'
 
 Cost Function -
-The Euclidean distance between any two states. This has been calculated as the Haversine distance.(Formula taken from https://stackoverflow.com/questions/19412462/getting-distance-between-two-points-based-on-latitude-longitude)
+The Euclidean distance between any two states. This has been calculated as the Haversine distance.
 
 Potential Issues -
 The code does not always provide the most optimal solution for longer routes. We have identified two possible reasons -
