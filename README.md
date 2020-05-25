@@ -1,4 +1,4 @@
-#Part 1: The Luddy puzzle
+## Part 1: The Luddy puzzle
 Initial State -
 The state provided as an input
 
@@ -29,7 +29,7 @@ A better solution would be to use heuristic to be a combination of Manhattan dis
 
 -----------------------------------------
 
-#Part 2 : Road Trip!
+## Part 2 : Road Trip!
 Initial State -
 Source city given as input
 
@@ -59,7 +59,7 @@ The following steps address each potential issue-
 2. Implement each item in the fringe as a dictionary so that it's easier to update the cost function whenever a shorter path is discovered. 
 
 -----------------------------------------
-#Part 3 - Choosing a team (Robot selection problem)
+## Part 3 - Choosing a team (Robot selection problem)
 
 1. State space:- It consists of all combinations of all the person's data. The starts with one person in each list and then goes
 on to add all the other remaining ones along with a conditional check to verify if the selection is within the budget.
